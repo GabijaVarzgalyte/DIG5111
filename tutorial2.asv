@@ -14,9 +14,39 @@ ylabel('Amplitude');
 xlabel('Time Sec'); 
 
 %%Task1
-%%Sampling Rate (Fs) – the number of samples per second (Hz)
-%%Bit Depth (B) – the number of bits per sample (e.g., 16-bit, 24-bit)
-%%Number of Channels (C) – mono (1) or stereo (2)
-%%Duration (T) – length of the signal in seconds
+%%File size = (sampling rate * bit depth * no. of channels * duration)/8
+%%Divided by 8 to change it from bits to bytes
 file_size = (duration*16*1*44100)/8;
+
+%%Task2
+info_audio = audioinfo("piano_middle_C.wav");
+disp(info_audio);
+
+%%Task3
+%3) Create Matlab code to input the full signal called "Sig”
+%and then manipulate the array, assigning samples from 0.5 second
+%to 1 second to a new variable called "sig2”
+
+t1 = 0.5;
+t2 = 1;
+%sample indicies
+t1samples = t1Fs;
+t2samples = t2Fs;
+partSig = Sig(t1samples:t2samples);
+partTime = Time(t1samples:t2samples);
+plot(partTime ,partSig);
+audioread('piano_middle_C.wav')
+
+%%Task 4
+
+[monoAudio, Fs] = audioread("piano_middle_C.wav");%% reading in the audio file
+stereoAudio = [monoAudio, monoAudio];%%creating stereo signal
+audiowrite('piano_middle_C.wav', stereoAudio, Fs);%%writing the stereo file
+
+%%Task 5
+
+nativeAudio = audioread('piano_middle_C.wav', 'native');
+
+
+
 

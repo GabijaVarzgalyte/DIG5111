@@ -27,14 +27,32 @@ disp(info_audio);
 %and then manipulate the array, assigning samples from 0.5 second
 %to 1 second to a new variable called "sig2”
 
-t1 = 0.5;
-t2 = 1;
+t1 = 0.5;%%time 1
+t2 = 1;%%time 2
 %sample indicies
 t1samples = t1Fs;
 t2samples = t2Fs;
-partSig = Sig(t1samples:t2samples);
-partTime = Time(t1samples:t2samples);
-plot(partTime ,partSig);
-audioread("piano_middle_C.wav")
+partSig = Sig(t1samples:t2samples);%%creating part of signal
+partTime = Time(t1samples:t2samples);%%creating part of time of signal
+plot(partTime ,partSig);%%plotting the signal
+audioread('piano_middle_C.wav')
+
+%%Task 4
+
+[monoAudio, Fs] = audioread("piano_middle_C.wav");%% reading in the audio file
+stereoAudio = [monoAudio, monoAudio];%%creating stereo signal
+audiowrite('piano_middle_C.wav', stereoAudio, Fs);%%writing the stereo file
+
+%%Task 5
+
+nativeAudio = audioread('piano_middle_C.wav', 'native');%%reading audio in using native argument
+t = (0:length(monoAudioNative)-1) / Fs;%% Converting sample indices to time values
+figure;
+plot(t, monoAudioNative);%%creating plot
+xlabel('Time (seconds)');
+ylabel('Amplitude');
+title('Time-Domain Representation of Mono Audio');
+grid on;
+
 
 
