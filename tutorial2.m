@@ -1,3 +1,4 @@
+%Week2
 %audio filename must in same directory of this m file 
 filename = 'piano_middle_C.wav'; 
 % First read wav file into memory 
