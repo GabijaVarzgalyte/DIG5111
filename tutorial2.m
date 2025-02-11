@@ -31,10 +31,10 @@ disp(info_audio);
 t1 = 0.5;%%time 1
 t2 = 1;%%time 2
 %sample indicies
-t1samples = t1Fs;
-t2samples = t2Fs;
+t1samples = t1*Fs;
+t2samples = t2*Fs;
 partSig = Sig(t1samples:t2samples);%%creating part of signal
-partTime = Time(t1samples:t2samples);%%creating part of time of signal
+partTime = time(t1samples:t2samples);%%creating part of time of signal
 plot(partTime ,partSig);%%plotting the signal
 audioread('piano_middle_C.wav')
 
@@ -42,18 +42,51 @@ audioread('piano_middle_C.wav')
 
 [monoAudio, Fs] = audioread("piano_middle_C.wav");%% reading in the audio file
 stereoAudio = [monoAudio, monoAudio];%%creating stereo signal
-audiowrite('piano_middle_C.wav', stereoAudio, Fs);%%writing the stereo file
+audiowrite('piano_middle_C_stereo.wav', stereoAudio, Fs);%%writing the stereo file
 
 %%Task 5
 
 nativeAudio = audioread('piano_middle_C.wav', 'native');%%reading audio in using native argument
-t = (0:length(monoAudioNative)-1) / Fs;%% Converting sample indices to time values
+t = (0:length(nativeAudio)-1) / Fs;%% Converting sample indices to time values
 figure;
-plot(t, monoAudioNative);%%creating plot
+plot(t, nativeAudio);%%creating plot
 xlabel('Time (seconds)');
 ylabel('Amplitude');
 title('Time-Domain Representation of Mono Audio');
 grid on;
+
+%%Task 6 
+
+max_monoAudio = double(nativeAudio)./max(abs(double(nativeAudio))); %% ./
+
+max_monoAudio_multiplier = 1/max_monoAudio;
+
+monoAudio = nativeAudio*max_monoAudio_multiplier;
+
+plot(monoAudio);
+
+%%Task 7
+
+rms_value = rms(monoAudio);
+normalised_audio = 0.5 * rms_value * monoAudio;
+
+%%Task 8
+
+%%table() = an array that stores column-oriented data e.g. text data or
+%%from a spreadsheet. All variables have to have the same number of rows.
+%%Use summary function!
+
+%%num2hex = Use num2hex to convert a matrix of numeric values to hexadecimal representation.
+
+%%num2bin = The num2bin function converts a numeric value into its binary representation.
+
+%% Task 8a
+
+
+
+
+
+
 
 
 
