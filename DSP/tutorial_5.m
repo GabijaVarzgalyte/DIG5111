@@ -1,18 +1,18 @@
-% %%Example of IR
+% %Example of IR
 % ir = zeros(1, 50000);
 % ir([1, 1000, 5000, 10000, 15000])= [1, 0.8, 0.7,0.6, 0.5];% create an impulse response
 % 
 % [sig, fs] = audioread('pluck.wav'); %Read Signal
-% %sound(sig,fs);
+% sound(sig,fs);
 % y = conv(sig, ir); % convolve the two signals
 % sound(y,fs);
 % subplot(211), plot(sig);% plot both signals on same figure.
 % subplot(212), plot(y);
-
-%%Task 1
-
+% 
+% %% Task 1
+% 
 % [sig, fs] = audioread("pluck.wav");%reading in audio file
-% t = [0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 1];%creating delay in time
+% t = [0.01, 0.05, 0.07, 0.1, 0.2, 0.4, 0.6];%creating delay in time
 % sampleNumber = round(fs * t);%rounding off the samples to integer values so they can be used as an index
 % 
 % IR = zeros(1, fs);%creating a function, 1 row with fs units
@@ -22,7 +22,7 @@
 % IR(sampleNumber(4)) = 0.17;
 % IR(sampleNumber(5)) = 0.2;
 % IR(sampleNumber(6)) = 0.1;
-% IR(sampleNumber(7)) = 0.05;
+% IR(sampleNumber(7)) = 0.02;
 % 
 % y = conv(sig, IR);
 % duration = length(y)/fs; %% calculates duration of the signal by doing Sig/Fs
@@ -33,7 +33,63 @@
 % xlabel('Time'); 
 % sound(y, fs)
 
-%Task 2
+% %% Task 2
+% 
+% % Reading in audio signal
+% [sig, fs] = audioread('pluck.wav'); %reading in the audio file
+% 
+% % Reading in IR - church and large hall
+% [sig_church, fs] = audioread("Church_mono.wav");%reading in the audio file
+% [sig_largeHall, fs] = audioread("LargeHall_mono.wav");%reading in the audio file
+% 
+% % Convolve input audio with impulse responses
+% reverb_largeHall = conv(sig, sig_largeHall);
+% reverb_church = conv(sig, sig_church);
+% 
+% % Normalise the output signals to prevent clipping
+% reverb_largeHall = reverb_largeHall / max(abs(reverb_largeHall));
+% reverb_church = reverb_church / max(abs(reverb_church));
+% 
+% % Save the results
+% audiowrite('Reverb_LargeHall.wav', reverb_largeHall, fs);
+% audiowrite('Reverb_Church.wav', reverb_church, fs);
+% 
+% % Play the reverberated audio
+% sound(reverb_largeHall, fs);
+% pause(length(reverb_largeHall)/fs);
+% sound(reverb_church, fs);
 
-[sig, fs] = audioread("Church.wav");%reading in the audio file
+%% Task 3
+
+% Load the original (dry) audio signal
+[input_audio, fs] = audioread("pluck.wav");
+
+% Load a reverberated version (e.g., Large Hall or Church)
+[reverb_audio, fs_reverb] = audioread("Reverb_LargeHall.wav"); % Use Church.wav if needed
+
+% Convolve input signal with impulse response (full length to keep reverb tail)
+reverb_audio_convolve = conv(input_audio, reverb_audio, 'full');
+
+% Zero-pad original signal to match reverb length
+input_audio = [input_audio; zeros(length(reverb_audio) - length(input_audio), 1)];
+
+% Set mixing levels (adjust as needed)
+dry_level = 0.1;  % 70% original sound
+wet_level = 0.9;  % 30% reverb effect
+
+% Mix the dry and wet signals
+mixed_audio = (dry_level * input_audio) + (wet_level * reverb_audio);
+
+% Normalize the final output to prevent clipping
+mixed_audio = mixed_audio / max(abs(mixed_audio));
+
+% Save the mixed version
+audiowrite("Mixed_Audio.wav", mixed_audio, fs);
+
+% Play the mixed sound
+sound(mixed_audio, fs);
+
+
+
+
 

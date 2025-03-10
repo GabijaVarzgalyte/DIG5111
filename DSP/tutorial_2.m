@@ -36,5 +36,6 @@ partSig = Sig(t1samples:t2samples);
 partTime = Time(t1samples:t2samples);
 plot(partTime ,partSig);
 audioread("piano_middle_C.wav")
+%% 
 
 
