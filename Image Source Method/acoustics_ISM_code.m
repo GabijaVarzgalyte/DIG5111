@@ -30,7 +30,7 @@ c  = 343;            % Speed of sound in m/s
 % Maximum reflection order (i.e. include reflections from -max_order to max_order in each dimension)
 % REFLECTION ORDER = how many times the sound or wave is reflected off
 % surfaces before it reaches the receiver
-max_order = 50;
+max_order = 30;
 
 % Absorption coefficients for surfaces (values between 0 and 1)
 % These represent the fraction of energy absorbed at each surface.
@@ -52,9 +52,25 @@ materials.carpet = struct('name', 'Carpet', 'absorption', [0.1, 0.1, 0.1, 0.1, 0
 materials.carpet = struct('name', 'Carpet', 'absorption', [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]);
 materials.carpet = struct('name', 'Carpet', 'absorption', [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]);
 
+% Display materials
+disp('Materials:');
+material_names = fieldnames(materials);
+for i = 1:length(material_names)
+    fprintf('%d: %s\n', i, material_names{i});
+end
+
+% User input for surface materials
+fprintf(('\nSelect materials for each surface (enter number 1-%d):\n'), length(material_names));
+left_wall_material = input('Left wall material: ');
+right_wall_material = input('Right wall material: ');
+front_wall_material = input('Front wall material: ');
+back_wall_material = input('Back wall material: ');
+ceiling_material = input('Ceiling material: ');
+floor_material = input('Floor material: ');
+
 % For simplicity, we use a single uniform absorption value.
 % Dampening of the air
-uniform_absorption = 0.05;  % (Placeholder value)
+uniform_absorption = 0.2;  % (Placeholder value)
 % Reflection coefficient per reflection (simple model):
 reflection_coeff_single = 1 - uniform_absorption; 
 % Note: In a more detailed model, you might compute the reflection coefficient 
@@ -131,7 +147,22 @@ for nx = -max_order:max_order % Looping over -50 to 50 order filters
     end
 end
 
-%% 3. 
+%% 3. Design Bandpass Filters for Each Octave Band
+
+h_filtered = zeros(N, nBands);
+for b = 1:nBands
+    f_low = lower_bound(b);
+    f_high = upper_bound(b);
+    wn = [f_low, f_high] / (fs/2);
+    [b_f, a_f] = butter(4, wn, 'bandpass');
+
+   
+[h] = ISM()
+
+filteredIR(b,:) = filter(b_f, a_f,h);
+end
+
+FinalIR = sum(filteredIR);
 
 %% 4. Plot the Impulse Response
 time_axis = (0:N-1) / fs;  % Time vector in seconds
@@ -145,14 +176,14 @@ grid on;
 %% 5. Using the Impulse Response for Convolution Reverb
 % The generated impulse response (vector h) can now be used to apply convolution
 % reverb to an audio signal.
-% Example (uncomment and modify as needed):
-%
-%   [audio, fs_audio] = audioread('your_audio_file.wav');
-%   audio_reverberated = conv(audio, h);
-%   soundsc(audio_reverberated, fs);
-%
-% Students can expand this section to include additional processing, such as
-% normalizing the impulse response, using frequency-dependent absorption, or
-% implementing higher-order reflections.
+
+[audio, fs_audio] = audioread('your_audio_file.wav');
+if size(audio, 2) > 1
+    audio = mean(audio, 2);
+end
+
+audio_reverberated = my_convolution(audio, FinalIR);
+
+soundsc(audio_reverberated, fs);
 
 %% End of Script

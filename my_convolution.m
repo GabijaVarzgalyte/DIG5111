@@ -1,0 +1,39 @@
+%% MY CONVOLUTION FUNCTION!
+
+function output = my_convolution(sig, mono_IR)
+
+% Wet/dry ratio: 0 = dry, 1 = wet
+wetdry = 0.5;
+
+% Calculating length difference between input signal and IR
+length_difference = length(sig) - length(mono_IR);
+
+% Creating a pad of 0s
+pad = zeros(length_difference, 1);
+
+% Adding pad to IR to make it same length as input signal
+new_IR = vertcat(mono_IR, pad);
+
+% Performing Fast Fourier Transform on input signal and IR; changing it
+% from time-domain to frequency-domain
+freq_sig = fft(sig);
+freq_mono_IR = fft(new_IR);
+
+% Multiplying the frequency bins of the 2 signals
+freq_y = freq_sig.*freq_mono_IR;
+
+% Converting the results back to time domain to be able to playback the
+% audio
+time_y = ifft(freq_y);
+
+% Normalising the final signal (wet/processed signal)
+final_y = time_y./max(abs(time_y));
+
+% Normalising the original signal
+dry = sig./max(abs(sig));
+
+% Adding the wet/dry signal
+output = (1 - wetdry) * dry + wetdry * final_y;
+
+
+end
